@@ -3,20 +3,23 @@
 namespace App\Controllers\Api\V1;
 
 use App\Repositories\UserRepository;
+use App\Services\UploadService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 /**
  * Profile Controller
- * 
+ *
  * Handles user profile-related API requests.
  * Provides endpoints for viewing and updating user profiles.
  */
 class ProfileController
 {
-    public function __construct(protected UserRepository $userRepository)
-    {
+    public function __construct(
+        protected UserRepository $userRepository,
+        protected UploadService $uploadService
+    ) {
     }
 
     /**
@@ -95,7 +98,7 @@ class ProfileController
 
     /**
      * Upload user avatar
-     * 
+     *
      * POST /api/v1/profile/avatar
      */
     public function uploadAvatar(Request $request): JsonResponse
@@ -103,19 +106,29 @@ class ProfileController
         try {
             $user = $request->user();
 
-            $validated = $request->validate([
-                'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            $request->validate([
+                'avatar' => 'required|file|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             ]);
 
-            // TODO: Store avatar and update user
-            // For now, return placeholder
+            $file = $request->file('avatar');
+
+            // Upload avatar using service
+            $result = $this->uploadService->uploadAvatar($file, $user, [
+                'generate_variants' => true,
+            ]);
+
+            if (!$result['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'],
+                    'errors' => $result['errors'] ?? [],
+                ], 422);
+            }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Avatar uploaded successfully',
-                'data' => [
-                    'avatar_url' => '/storage/avatars/placeholder.jpg',
-                ],
+                'message' => $result['message'],
+                'data' => $result['data'],
             ], 200);
         } catch (ValidationException $e) {
             return response()->json([
@@ -133,7 +146,7 @@ class ProfileController
 
     /**
      * Delete user avatar
-     * 
+     *
      * DELETE /api/v1/profile/avatar
      */
     public function deleteAvatar(Request $request): JsonResponse
@@ -141,9 +154,20 @@ class ProfileController
         try {
             $user = $request->user();
 
-            // TODO: Delete avatar file and update user
+            if (!$user->avatar) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User does not have an avatar',
+                ], 404);
+            }
 
-            $this->userRepository->update($user, ['avatar' => null]);
+            // Delete avatar using service
+            if (!$this->uploadService->deleteAvatar($user)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to delete avatar',
+                ], 500);
+            }
 
             return response()->json([
                 'success' => true,
