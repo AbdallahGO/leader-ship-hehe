@@ -9,16 +9,19 @@ This document outlines all security measures implemented in the PHP Backend Dash
 ## 1. Authentication & Authorization
 
 ### Authentication Method
+
 - **Technology**: Laravel Sanctum (token-based API authentication)
 - **Token Storage**: Bearer tokens sent in `Authorization` header
 - **Token Expiration**: 24 hours (configurable in `config/security.php`)
 
 ### Authorization Levels
+
 - **Public Routes**: Registration, Login, Forgot Password, Reset Password
 - **Authenticated Routes**: Dashboard, Profile, Notifications (requires valid token)
 - **Admin Routes**: User management (requires admin role)
 
 ### Implementation
+
 ```php
 // Protected routes require authentication
 Route::middleware('auth:sanctum')->group(function () {
@@ -38,6 +41,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 All API endpoints validate incoming data to prevent invalid or malicious input.
 
 ### Validation Classes
+
 - **RegisterRequest**: Email format, strong password, name format
 - **LoginRequest**: Valid email, minimum password length
 - **ForgotPasswordRequest**: Valid email address
@@ -49,13 +53,14 @@ All API endpoints validate incoming data to prevent invalid or malicious input.
 - **MarkNotificationAsReadRequest**: Notification ID validation
 
 ### Validation Rules Applied
+
 - Email format validation (RFC compliant)
 - Strong password requirements:
   - Minimum 8 characters
   - Must contain uppercase letters
   - Must contain lowercase letters
   - Must contain numbers
-  - Must contain special characters (@$!%*?&)
+  - Must contain special characters (@$!%\*?&)
 - File type validation for uploads
 - Input length limits
 - Regex pattern matching for name fields
@@ -66,6 +71,7 @@ All API endpoints validate incoming data to prevent invalid or malicious input.
 ## 3. Input Sanitization
 
 ### SanitizeInput Middleware
+
 Protects against XSS attacks by sanitizing user input:
 
 - **HTML Entity Encoding**: Converts special characters to HTML entities
@@ -74,12 +80,14 @@ Protects against XSS attacks by sanitizing user input:
 - **Array Sanitization**: Recursively sanitizes nested arrays
 
 ### Protected Fields (Not Sanitized)
+
 - `password`
 - `password_confirmation`
 - `token`
 - `remember_token`
 
 ### Implementation
+
 ```php
 // Automatic sanitization applied to POST, PUT, PATCH requests
 if (in_array($request->method(), ['POST', 'PUT', 'PATCH'])) {
@@ -92,29 +100,32 @@ if (in_array($request->method(), ['POST', 'PUT', 'PATCH'])) {
 ## 4. Security Headers
 
 ### SecurityHeaders Middleware
+
 Adds protective HTTP headers to all responses:
 
-| Header | Value | Purpose |
-|--------|-------|---------|
-| X-Frame-Options | DENY | Prevents clickjacking attacks |
-| X-Content-Type-Options | nosniff | Prevents MIME type sniffing |
-| X-XSS-Protection | 1; mode=block | Enables browser XSS filters |
-| Content-Security-Policy | restricted | Prevents inline script execution |
-| Referrer-Policy | strict-origin-when-cross-origin | Controls referrer information |
-| Permissions-Policy | geolocation=(), microphone=(), camera=() | Restricts browser features |
-| Strict-Transport-Security | max-age=31536000 | Enforces HTTPS (production only) |
+| Header                    | Value                                    | Purpose                          |
+| ------------------------- | ---------------------------------------- | -------------------------------- |
+| X-Frame-Options           | DENY                                     | Prevents clickjacking attacks    |
+| X-Content-Type-Options    | nosniff                                  | Prevents MIME type sniffing      |
+| X-XSS-Protection          | 1; mode=block                            | Enables browser XSS filters      |
+| Content-Security-Policy   | restricted                               | Prevents inline script execution |
+| Referrer-Policy           | strict-origin-when-cross-origin          | Controls referrer information    |
+| Permissions-Policy        | geolocation=(), microphone=(), camera=() | Restricts browser features       |
+| Strict-Transport-Security | max-age=31536000                         | Enforces HTTPS (production only) |
 
 ---
 
 ## 5. Rate Limiting
 
 ### RateLimiting Middleware
+
 Protects against brute force and DoS attacks:
 
 - **API Rate Limit**: 60 requests per minute per IP address
 - **Response Code**: 429 (Too Many Requests)
 
 ### Configuration
+
 ```php
 // config/security.php
 'rate_limit' => [
@@ -127,6 +138,7 @@ Protects against brute force and DoS attacks:
 ## 6. Login Attempt Protection
 
 ### LoginAttemptService
+
 Prevents brute force attacks on login endpoint:
 
 - **Max Failed Attempts**: 5 attempts
@@ -134,18 +146,20 @@ Prevents brute force attacks on login endpoint:
 - **Per**: Email address (not IP)
 
 ### Features
+
 - Tracks failed login attempts
 - Automatically locks account after 5 failed attempts
 - Returns remaining attempts to client
 - Clears attempts on successful login
 
 ### Response Example
+
 ```json
 {
-    "success": false,
-    "message": "Account locked due to too many failed attempts",
-    "remaining_attempts": 0,
-    "lockout_duration_minutes": 15
+  "success": false,
+  "message": "Account locked due to too many failed attempts",
+  "remaining_attempts": 0,
+  "lockout_duration_minutes": 15
 }
 ```
 
@@ -154,10 +168,13 @@ Prevents brute force attacks on login endpoint:
 ## 7. Security Check Middleware
 
 ### Suspicious Activity Detection
+
 Identifies and logs potential attack attempts:
 
 #### SQL Injection Detection
+
 Patterns detected:
+
 - `' OR '` constructs
 - `UNION SELECT` statements
 - `INSERT INTO` statements
@@ -166,7 +183,9 @@ Patterns detected:
 - `EXEC()` or `EXECUTE()` calls
 
 #### XSS Detection
+
 Patterns detected:
+
 - `<script>` tags
 - `<iframe>` tags
 - `javascript:` protocol
@@ -175,7 +194,9 @@ Patterns detected:
 - Image tags with event handlers
 
 #### Logging
+
 All detected attempts are logged with:
+
 - Attack type
 - Parameter name
 - User ID
@@ -188,9 +209,11 @@ All detected attempts are logged with:
 ## 8. Activity Logging
 
 ### ActivityLoggingService
+
 Maintains audit trail of all user actions:
 
 #### Logged Events
+
 - Authentication (login, logout, password reset)
 - Profile updates (name, email changes)
 - Password changes
@@ -199,6 +222,7 @@ Maintains audit trail of all user actions:
 - Suspicious activities
 
 #### Logged Information
+
 - User ID
 - Action performed
 - Timestamp
@@ -207,6 +231,7 @@ Maintains audit trail of all user actions:
 - Additional details (JSON encoded)
 
 #### Retrieval
+
 ```php
 // Get user's recent activity
 $activities = $activityLogger->getUserActivity($userId, limit: 50);
@@ -220,6 +245,7 @@ $suspicious = $activityLogger->getSuspiciousActivities(limit: 100);
 ## 9. Authorization Middleware
 
 ### CheckResourceOwnership Middleware
+
 Ensures users can only access their own resources:
 
 - **User Resources**: Can only view/edit own profile
@@ -227,6 +253,7 @@ Ensures users can only access their own resources:
 - **Response Code**: 403 (Forbidden) for unauthorized access
 
 ### Implementation
+
 ```php
 // Prevents non-admin users from accessing other users' data
 Route::put('/profile/{id}', ...)->middleware('check.ownership');
@@ -237,11 +264,13 @@ Route::put('/profile/{id}', ...)->middleware('check.ownership');
 ## 10. HTTPS/SSL Configuration
 
 ### Production Requirements
+
 - Force HTTPS redirection
 - Secure cookies only
 - HSTS header enforcement
 
 ### Configuration
+
 ```php
 // config/security.php
 'https' => [
@@ -253,6 +282,7 @@ Route::put('/profile/{id}', ...)->middleware('check.ownership');
 ```
 
 ### Setup Steps
+
 1. Obtain SSL certificate (Let's Encrypt recommended)
 2. Configure web server (Nginx/Apache)
 3. Update `.env`: `APP_URL=https://yourdomain.com`
@@ -263,12 +293,14 @@ Route::put('/profile/{id}', ...)->middleware('check.ownership');
 ## 11. SQL Injection Prevention
 
 ### Laravel ORM Protection
+
 - Uses **parameterized queries** automatically
 - All database queries use Eloquent ORM
 - No raw SQL queries in sensitive areas
 - Input validation as additional layer
 
 ### Example
+
 ```php
 // Safe - uses parameterized query
 User::where('email', $email)->first();
@@ -282,17 +314,20 @@ DB::select("SELECT * FROM users WHERE email = '$email'");
 ## 12. CORS Configuration
 
 ### Allowed Origins
+
 - Configured via `CORS_ALLOWED_ORIGINS` environment variable
 - Default: `http://localhost:3000`
 - Production: Should be restricted to your frontend domain
 
 ### Configuration
+
 ```bash
 # .env
 CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://api.yourdomain.com
 ```
 
 ### Allowed Methods
+
 - GET, POST, PUT, DELETE, PATCH, OPTIONS
 
 ---
@@ -300,6 +335,7 @@ CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://api.yourdomain.com
 ## 13. Password Security
 
 ### Requirements
+
 - Minimum 8 characters
 - Must include uppercase letters
 - Must include lowercase letters
@@ -307,6 +343,7 @@ CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://api.yourdomain.com
 - Must include special characters
 
 ### Hashing
+
 - Algorithm: bcrypt (Laravel default)
 - Cost factor: configurable (default: 12)
 - Never stored in plain text
@@ -316,6 +353,7 @@ CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://api.yourdomain.com
 ## 14. Session Security
 
 ### Configuration
+
 - **Timeout**: 30 minutes of inactivity
 - **Secure Cookie**: HTTPS only in production
 - **HttpOnly**: No JavaScript access to tokens
@@ -326,6 +364,7 @@ CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://api.yourdomain.com
 ## 15. File Upload Security
 
 ### Avatar Upload Protection
+
 - **Allowed Types**: JPEG, PNG, GIF, WebP
 - **Max Size**: 5MB
 - **Dimensions**: 100x100 to 4000x4000 pixels
@@ -333,6 +372,7 @@ CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://api.yourdomain.com
 - **Verification**: MIME type validation
 
 ### Validation
+
 ```php
 'avatar' => [
     'required',
@@ -348,6 +388,7 @@ CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://api.yourdomain.com
 ## 16. Environment Configuration
 
 ### Critical Variables
+
 ```bash
 APP_ENV=production          # Environment
 APP_DEBUG=false            # Disable debug mode
@@ -361,6 +402,7 @@ ENABLE_REQUEST_SIGNING=false # Enable request signing
 ```
 
 ### Never Commit
+
 - `.env` file
 - Database credentials
 - API keys
@@ -371,6 +413,7 @@ ENABLE_REQUEST_SIGNING=false # Enable request signing
 ## 17. Security Best Practices
 
 ### For Developers
+
 1. ✅ Always validate input on server-side
 2. ✅ Use parameterized queries
 3. ✅ Sanitize output for the context (HTML, JSON, etc.)
@@ -383,6 +426,7 @@ ENABLE_REQUEST_SIGNING=false # Enable request signing
 10. ✅ Implement audit logging
 
 ### For DevOps
+
 1. ✅ Enable firewall rules
 2. ✅ Use strong SSL certificates
 3. ✅ Enable security headers in web server
@@ -397,11 +441,13 @@ ENABLE_REQUEST_SIGNING=false # Enable request signing
 ## 18. Testing Security Features
 
 ### Unit Tests
+
 ```bash
 php artisan test --filter=SecurityTest
 ```
 
 ### Manual Testing
+
 1. Test rate limiting (60+ requests/minute)
 2. Test login lockout (6 failed attempts)
 3. Test input sanitization with XSS payloads
@@ -411,6 +457,7 @@ php artisan test --filter=SecurityTest
 7. Verify security headers in response
 
 ### Tools
+
 - **Postman**: API testing
 - **OWASP ZAP**: Security scanning
 - **Burp Suite**: Web security testing
@@ -429,11 +476,13 @@ for i in {1..70}; do curl https://yourdomain.com/api/v1/dashboard; done
 ## 19. Monitoring & Alerts
 
 ### Log Locations
+
 - Application logs: `storage/logs/`
 - Activity logs: Database `activity_logs` table
 - Suspicious activities: Query `activity_logs` where `action` LIKE `'security:%'`
 
 ### Key Metrics to Monitor
+
 - Failed login attempts
 - Rate limit violations
 - Suspicious activity detections
@@ -445,6 +494,7 @@ for i in {1..70}; do curl https://yourdomain.com/api/v1/dashboard; done
 ## 20. Incident Response
 
 ### If Security Breach Detected
+
 1. Immediately disable compromised accounts
 2. Review activity logs for affected user IDs
 3. Check for unauthorized data access
@@ -486,6 +536,7 @@ for i in {1..70}; do curl https://yourdomain.com/api/v1/dashboard; done
 ## Support
 
 For security concerns or vulnerabilities:
+
 1. Do NOT create public issues
 2. Report to: security@yourdomain.com
 3. Include: Description, reproduction steps, impact

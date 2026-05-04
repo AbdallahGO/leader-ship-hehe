@@ -10,6 +10,7 @@
 ## Overview
 
 Phase 6 implements a comprehensive, secure, and optimized file upload system supporting:
+
 - Avatar uploads with automatic optimization
 - Image variants generation (thumb, medium, large)
 - File validation and security scanning
@@ -41,6 +42,7 @@ UploadService (Orchestrator)
 **Purpose**: Comprehensive file validation
 
 **Features**:
+
 - File size validation
 - Extension validation
 - MIME type validation
@@ -48,6 +50,7 @@ UploadService (Orchestrator)
 - Malicious content detection
 
 **Usage**:
+
 ```php
 $validator = app(FileValidationService::class);
 
@@ -59,6 +62,7 @@ if ($validator->validate($file, 'avatar')) {
 ```
 
 **Supported Types**:
+
 - `avatar` - Images: JPG, PNG, GIF, WebP
 - `document` - Documents: PDF, DOC, DOCX, XLS, TXT
 - `video` - Videos: MP4, AVI, MOV, WebM
@@ -70,6 +74,7 @@ if ($validator->validate($file, 'avatar')) {
 **Purpose**: Image processing and optimization
 
 **Features**:
+
 - Automatic image optimization
 - Multiple variant generation
 - Quality control
@@ -77,15 +82,18 @@ if ($validator->validate($file, 'avatar')) {
 - Format conversion
 
 **Variants Generated**:
+
 - `thumb` - 150x150px (thumbnails)
 - `medium` - 300x300px (listings)
 - `large` - 800x800px (detail views)
 
 **Quality Settings**:
+
 - JPG/WebP: 85% quality
 - PNG: 9 (max compression)
 
 **Usage**:
+
 ```php
 $optimizer = app(ImageOptimizationService::class);
 
@@ -109,6 +117,7 @@ $sizeReduction = $result['size_reduction']; // e.g., "42.5%"
 **Methods**:
 
 #### uploadAvatar()
+
 ```php
 $result = $uploadService->uploadAvatar($file, $user, [
     'generate_variants' => true,
@@ -127,21 +136,25 @@ if ($result['success']) {
 ```
 
 #### uploadDocument()
+
 ```php
 $result = $uploadService->uploadDocument($file, $user);
 ```
 
 #### deleteAvatar()
+
 ```php
 $uploadService->deleteAvatar($user);
 ```
 
 #### getUploadHistory()
+
 ```php
 $history = $uploadService->getUploadHistory($user, limit: 50);
 ```
 
 #### getStatistics()
+
 ```php
 $stats = $uploadService->getStatistics();
 // Returns: total_files, total_disk_usage, average_file_size
@@ -156,6 +169,7 @@ $stats = $uploadService->getStatistics();
 **Key Methods**:
 
 #### initialize Directories()
+
 ```php
 $storageManager->initializeDirectories();
 // Creates all necessary upload directories
@@ -163,29 +177,34 @@ $storageManager->initializeDirectories();
 ```
 
 #### getUrl()
+
 ```php
 $url = $storageManager->getUrl('avatars', 'filename.jpg');
 // Returns: /storage/uploads/avatars/filename.jpg
 ```
 
 #### getUserStorageQuota()
+
 ```php
 $quota = $storageManager->getUserStorageQuota($userId, quotaMB: 100);
 // Returns: used, quota, remaining, percentage
 ```
 
 #### getStorageStatistics()
+
 ```php
 $stats = $storageManager->getStorageStatistics();
 // Returns: total, used, available, percentage_used
 ```
 
 #### cleanTemporaryFiles()
+
 ```php
 $deleted = $storageManager->cleanTemporaryFiles(ageHours: 24);
 ```
 
 #### archiveOldFiles()
+
 ```php
 $archived = $storageManager->archiveOldFiles(daysOld: 90);
 ```
@@ -199,12 +218,14 @@ $archived = $storageManager->archiveOldFiles(daysOld: 90);
 **Endpoint**: `POST /api/v1/profile/avatar`
 
 **Headers**:
+
 ```
 Authorization: Bearer {token}
 Content-Type: multipart/form-data
 ```
 
 **Request**:
+
 ```bash
 curl -X POST http://api.example.com/api/v1/profile/avatar \
   -H "Authorization: Bearer TOKEN" \
@@ -212,6 +233,7 @@ curl -X POST http://api.example.com/api/v1/profile/avatar \
 ```
 
 **Response (Success)**:
+
 ```json
 {
   "success": true,
@@ -253,13 +275,12 @@ curl -X POST http://api.example.com/api/v1/profile/avatar \
 ```
 
 **Response (Validation Error)**:
+
 ```json
 {
   "success": false,
   "message": "File size (6144KB) exceeds maximum allowed size (5120KB).",
-  "errors": [
-    "File size (6144KB) exceeds maximum allowed size (5120KB)."
-  ]
+  "errors": ["File size (6144KB) exceeds maximum allowed size (5120KB)."]
 }
 ```
 
@@ -270,17 +291,20 @@ curl -X POST http://api.example.com/api/v1/profile/avatar \
 **Endpoint**: `DELETE /api/v1/profile/avatar`
 
 **Headers**:
+
 ```
 Authorization: Bearer {token}
 ```
 
 **Request**:
+
 ```bash
 curl -X DELETE http://api.example.com/api/v1/profile/avatar \
   -H "Authorization: Bearer TOKEN"
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -398,6 +422,7 @@ storage/
 ## Security Features
 
 ### 1. Validation Security
+
 - ✅ File extension validation
 - ✅ MIME type verification
 - ✅ Image dimension checking
@@ -405,18 +430,21 @@ storage/
 - ✅ Malicious code detection
 
 ### 2. Storage Security
+
 - ✅ Files stored outside public directory
 - ✅ .htaccess prevents direct execution
 - ✅ Unique filenames prevent overwriting
 - ✅ Timestamped filenames for audit trail
 
 ### 3. Access Control
+
 - ✅ Authenticated upload requirement
 - ✅ Resource ownership enforcement
 - ✅ Activity logging for all uploads
 - ✅ User storage quotas
 
 ### 4. File Processing
+
 - ✅ Image reprocessing removes metadata
 - ✅ Automatic format optimization
 - ✅ Size reduction (typically 40-50%)
@@ -427,6 +455,7 @@ storage/
 ## Best Practices Implemented
 
 ### From Project Plan
+
 1. ✅ **Secure backend architecture** - Token-based validation
 2. ✅ **Clean code** - Service-oriented architecture
 3. ✅ **Modular services** - Separated concerns (validation, optimization, storage)
@@ -436,6 +465,7 @@ storage/
 7. ✅ **Scalable architecture** - Storage manager for growth
 
 ### Security Best Practices
+
 - ✅ Never trust file extensions
 - ✅ Validate MIME types server-side
 - ✅ Check file dimensions
@@ -450,17 +480,20 @@ storage/
 ## Performance Metrics
 
 ### Image Optimization Results
+
 - **Original Size**: ~100KB
 - **Optimized Size**: ~58KB (42% reduction)
 - **Processing Time**: ~200-300ms
 - **Variants Generated**: 3 (thumb, medium, large)
 
 ### Database Impact
+
 - Activity logs for all uploads/deletes
 - User avatar field tracking
 - No performance degradation
 
 ### Storage Efficiency
+
 - Average avatar with variants: ~90KB total
 - 1000 users with avatars: ~90MB
 - Cleanup removes orphaned files after 30 days
@@ -546,6 +579,7 @@ php artisan upload:backup
 ### Common Error Scenarios
 
 #### File Too Large
+
 ```json
 {
   "success": false,
@@ -555,6 +589,7 @@ php artisan upload:backup
 ```
 
 #### Invalid Image Dimensions
+
 ```json
 {
   "success": false,
@@ -564,6 +599,7 @@ php artisan upload:backup
 ```
 
 #### Invalid MIME Type
+
 ```json
 {
   "success": false,
@@ -573,6 +609,7 @@ php artisan upload:backup
 ```
 
 #### User Has No Avatar (Delete)
+
 ```json
 {
   "success": false,
@@ -593,7 +630,7 @@ public function test_validates_file_size()
 {
     $validator = app(FileValidationService::class);
     $file = UploadedFile::fake()->image('avatar.jpg')->size(10240);
-    
+
     $this->assertFalse($validator->validate($file, 'avatar'));
 }
 
@@ -602,9 +639,9 @@ public function test_generates_variants()
 {
     $optimizer = app(ImageOptimizationService::class);
     $file = UploadedFile::fake()->image('avatar.jpg');
-    
+
     $result = $optimizer->process($file, ['generate_variants' => true]);
-    
+
     $this->assertArrayHasKey('thumb', $result['variants']);
     $this->assertArrayHasKey('medium', $result['variants']);
     $this->assertArrayHasKey('large', $result['variants']);
@@ -619,10 +656,10 @@ public function test_upload_avatar()
 {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->image('avatar.jpg');
-    
+
     $response = $this->actingAs($user)
         ->post('/api/v1/profile/avatar', ['avatar' => $file]);
-    
+
     $response->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.url', '/storage/uploads/avatars/*');
@@ -632,13 +669,13 @@ public function test_upload_avatar()
 public function test_delete_avatar()
 {
     $user = User::factory()->create(['avatar' => 'test.jpg']);
-    
+
     $response = $this->actingAs($user)
         ->delete('/api/v1/profile/avatar');
-    
+
     $response->assertOk()
         ->assertJsonPath('success', true);
-    
+
     $this->assertNull($user->fresh()->avatar);
 }
 ```
@@ -648,15 +685,19 @@ public function test_delete_avatar()
 ## Troubleshooting
 
 ### Issue: "Storage directory not created"
+
 **Solution**: Run `php artisan upload:init`
 
 ### Issue: "Permission denied" on upload
+
 **Solution**: Ensure storage directory permissions: `chmod -R 755 storage/uploads`
 
 ### Issue: Image not optimized
+
 **Solution**: Verify Intervention\Image is installed: `composer require intervention/image`
 
 ### Issue: Variants not generated
+
 **Solution**: Check config: `config('uploads.avatar.variants')`
 
 ---
@@ -693,18 +734,22 @@ public function test_delete_avatar()
 ## Files Created
 
 ### Services (4)
+
 - `app/Services/FileValidationService.php`
 - `app/Services/ImageOptimizationService.php`
 - `app/Services/UploadService.php`
 - `app/Services/StorageManager.php`
 
 ### Configuration (1)
+
 - `config/uploads.php`
 
 ### Updated Files (1)
+
 - `app/Controllers/Api/V1/ProfileController.php`
 
 ### Documentation (1)
+
 - `backend/FILE_UPLOAD_GUIDE.md` (this file)
 
 ---
@@ -712,6 +757,7 @@ public function test_delete_avatar()
 ## Phase 6 Checklist
 
 ### Development
+
 - [x] Create FileValidationService
 - [x] Create ImageOptimizationService
 - [x] Create UploadService
@@ -722,6 +768,7 @@ public function test_delete_avatar()
 - [x] Add activity logging
 
 ### Testing
+
 - [ ] Unit test validation service
 - [ ] Unit test optimization service
 - [ ] Feature test upload endpoint
@@ -730,6 +777,7 @@ public function test_delete_avatar()
 - [ ] Test cleanup functionality
 
 ### Documentation
+
 - [x] API documentation
 - [x] Configuration guide
 - [x] Architecture documentation
@@ -743,6 +791,7 @@ public function test_delete_avatar()
 ✅ **Phase 6 - File Upload System: COMPLETE**
 
 A production-ready file upload system with:
+
 - Comprehensive validation
 - Image optimization & variants
 - Secure storage management

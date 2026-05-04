@@ -1,6 +1,7 @@
 # Security Middleware Setup Guide
 
 ## Overview
+
 This guide explains how to register and configure all security middleware for the PHP Backend Dashboard.
 
 ---
@@ -31,7 +32,7 @@ For production environments behind a load balancer:
 ```php
 protected $proxies = '*'; // or specify IP addresses
 
-protected $headers = 
+protected $headers =
     Request::HEADER_X_FORWARDED_FOR |
     Request::HEADER_X_FORWARDED_HOST |
     Request::HEADER_X_FORWARDED_PROTO |
@@ -43,6 +44,7 @@ protected $headers =
 ## Middleware Execution Order
 
 ### Request Flow
+
 ```
 1. SecurityCheck       (Detect suspicious activity)
 2. RateLimiting       (Check rate limits)
@@ -52,6 +54,7 @@ protected $headers =
 ```
 
 ### Response Flow
+
 ```
 1. SecurityHeaders    (Add security headers)
 2. Response sent
@@ -66,6 +69,7 @@ protected $headers =
 **Purpose**: Detects and logs potential attack attempts
 
 **Detects**:
+
 - SQL injection patterns
 - XSS attempts
 - Unusual input patterns
@@ -79,6 +83,7 @@ protected $headers =
 **Purpose**: Prevents brute force and DoS attacks
 
 **Configuration** (in `config/security.php`):
+
 ```php
 'rate_limit' => [
     'api_requests_per_minute' => 60,
@@ -92,6 +97,7 @@ protected $headers =
 **Purpose**: Prevents XSS by sanitizing user input
 
 **Behavior**:
+
 - Sanitizes all POST, PUT, PATCH requests
 - Skips password fields
 - HTML encodes special characters
@@ -104,6 +110,7 @@ protected $headers =
 **Purpose**: Adds protective HTTP headers
 
 **Headers Added**:
+
 - X-Frame-Options: DENY
 - X-Content-Type-Options: nosniff
 - X-XSS-Protection: 1; mode=block
@@ -119,6 +126,7 @@ protected $headers =
 **Purpose**: Ensures users can only access their own resources
 
 **Behavior**:
+
 - Admins bypass all checks
 - Non-admins can only access resources with their own ID
 - Returns 403 Forbidden for unauthorized access
@@ -191,6 +199,7 @@ protected $middlewareGroups = [
 ```
 
 Use in routes:
+
 ```php
 Route::middleware('api')->group(function () {
     // Public API routes
@@ -252,13 +261,14 @@ class SecurityMiddlewareTest extends TestCase
         ]);
 
         // Name should be sanitized
-        $this->assertEquals('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;John', 
+        $this->assertEquals('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;John',
             $response->json('data.name'));
     }
 }
 ```
 
 Run tests:
+
 ```bash
 php artisan test tests/Unit/Middleware/SecurityMiddlewareTest.php
 ```
@@ -266,6 +276,7 @@ php artisan test tests/Unit/Middleware/SecurityMiddlewareTest.php
 ### Manual Testing
 
 #### Test Rate Limiting
+
 ```bash
 # Make 65 requests in quick succession
 for i in {1..65}; do
@@ -277,6 +288,7 @@ done
 ```
 
 #### Test Security Headers
+
 ```bash
 # Check response headers
 curl -I https://api.yourdomain.com/api/v1/auth/login
@@ -288,6 +300,7 @@ curl -I https://api.yourdomain.com/api/v1/auth/login
 ```
 
 #### Test Input Sanitization
+
 ```bash
 # Test with XSS payload
 curl -X POST https://api.yourdomain.com/api/v1/auth/register \
@@ -306,6 +319,7 @@ curl -X POST https://api.yourdomain.com/api/v1/auth/register \
 ## Performance Considerations
 
 ### Middleware Performance Impact
+
 - **SecurityCheck**: ~5ms (regex pattern matching)
 - **RateLimiting**: ~2ms (cache lookup)
 - **SanitizeInput**: ~3ms (string processing)
@@ -314,6 +328,7 @@ curl -X POST https://api.yourdomain.com/api/v1/auth/register \
 **Total**: ~10ms per request (acceptable for most applications)
 
 ### Optimization Tips
+
 1. **Cache Middleware Results**: Store rate limit keys in Redis for better performance
 2. **Async Logging**: Log suspicious activities asynchronously using queues
 3. **Route Groups**: Use middleware groups to avoid repetition
@@ -331,25 +346,33 @@ if ($request->acceptsJson() && $request->header('X-API-Version') === '2') {
 ## Troubleshooting
 
 ### Issue: All Requests Return 429
+
 **Solution**: Rate limiting set too low
+
 - Check `config/security.php` `rate_limit.api_requests_per_minute`
 - Ensure Redis is running (if using Redis cache)
 - Check cache driver configuration
 
 ### Issue: Security Headers Not Appearing
+
 **Solution**: Middleware not registered or applied
+
 - Verify middleware in `app/Http/Kernel.php`
 - Ensure routes use correct middleware
 - Check middleware group configuration
 
 ### Issue: Legitimate Requests Flagged as Suspicious
+
 **Solution**: Security check patterns too strict
+
 - Update suspicious patterns in `SecurityCheck` middleware
 - Add to exceptions list
 - Review logged suspicious activities
 
 ### Issue: Sanitization Breaking JSON Fields
+
 **Solution**: Disable sanitization for specific fields
+
 - Update `$except` array in `SanitizeInput` middleware
 - Use conditional sanitization based on content-type
 - Implement custom sanitization rules
