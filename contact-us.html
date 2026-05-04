@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us - Apex Leadership</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    .contact-header {
+      margin-top: 100px;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .contact-header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .contact-header h1 {
+      font-family: var(--serif);
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .contact-header p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .contact-content {
+      padding: 4rem 2rem;
+    }
+
+    .contact-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 4rem;
+    }
+
+    .contact-form {
+      background: var(--bg-3);
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .contact-form h2 {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: var(--gold);
+    }
+
+    .contact-form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .contact-form label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .contact-form input,
+    .contact-form textarea,
+    .contact-form select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg-1);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus,
+    .contact-form select:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    }
+
+    .contact-form textarea {
+      resize: vertical;
+      min-height: 150px;
+    }
+
+    .contact-form button {
+      width: 100%;
+      padding: 1rem;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+
+    .contact-form button:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .contact-info-card {
+      background: var(--bg-3);
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .contact-info-card h3 {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      color: var(--gold);
+    }
+
+    .contact-info-card p {
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 0.5rem;
+    }
+
+    .contact-info-card a {
+      color: var(--gold);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .contact-info-card a:hover {
+      color: var(--gold-light);
+      text-decoration: underline;
+    }
+
+    .contact-info-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .office-locations {
+      margin-top: 4rem;
+      padding-top: 4rem;
+      border-top: 2px solid var(--border);
+    }
+
+    .office-locations h2 {
+      font-family: var(--serif);
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: var(--text);
+    }
+
+    .office-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .office-card {
+      background: var(--bg-3);
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .office-card h4 {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--gold);
+    }
+
+    .office-card p {
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 14px;
+      margin-bottom: 0.5rem;
+    }
+
+    .back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 40px;
+      height: 40px;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s;
+      z-index: 50;
+    }
+
+    .back-to-top.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .back-to-top:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .contact-header {
+        margin-top: 60px;
+        padding: 2rem 1rem;
+      }
+
+      .contact-header h1 {
+        font-size: 2rem;
+      }
+
+      .contact-content {
+        padding: 2rem 1rem;
+      }
+
+      .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .office-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav id="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="leadership-summit.html" class="nav-logo">
+        <div class="logo-mark"><span>A</span></div>
+        Apex Leadership
+      </a>
+      <ul class="nav-links">
+        <li><a href="leadership-summit.html#speakers">Speakers</a></li>
+        <li><a href="leadership-summit.html#attend">Attend</a></li>
+        <li><a href="leadership-summit.html#experience">Experience</a></li>
+        <li><a href="leadership-summit.html#hosting">Hosting</a></li>
+        <li><a href="leadership-summit.html#faq">FAQ</a></li>
+      </ul>
+      <div class="nav-cta">
+        <button class="lang-btn" id="langBtn" onclick="toggleLang()" aria-label="Switch language">
+          <span class="lang-flag" id="langFlag">🇸🇦</span>
+          <span id="langLabel">العربية</span>
+        </button>
+        <a href="leadership-summit.html" class="btn btn-gold">Back to Summit</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HEADER ── -->
+<div class="contact-header">
+  <div class="contact-header-inner">
+    <h1>Get in Touch</h1>
+    <p>We'd love to hear from you. Whether you have questions, feedback, or just want to say hello, we're here to help. Reach out to us using any of the methods below.</p>
+  </div>
+</div>
+
+<!-- ── CONTACT CONTENT ── -->
+<div class="contact-content">
+  <div class="contact-container">
+    <div class="contact-grid">
+      <!-- Contact Form -->
+      <form class="contact-form" onsubmit="handleContactForm(event)">
+        <h2>Send us a Message</h2>
+        <div class="contact-form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <div class="contact-form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div class="contact-form-group">
+          <label for="subject">Subject</label>
+          <input type="text" id="subject" name="subject" required />
+        </div>
+        <div class="contact-form-group">
+          <label for="topic">Topic</label>
+          <select id="topic" name="topic" required>
+            <option value="">Select a topic...</option>
+            <option value="registration">Registration Question</option>
+            <option value="technical">Technical Support</option>
+            <option value="hosting">Hosting Inquiry</option>
+            <option value="sponsorship">Sponsorship</option>
+            <option value="partnership">Partnership Opportunity</option>
+            <option value="feedback">Feedback</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="contact-form-group">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" required></textarea>
+        </div>
+        <button type="submit">Send Message</button>
+      </form>
+
+      <!-- Contact Information -->
+      <div class="contact-info">
+        <div class="contact-info-card">
+          <div class="contact-info-icon">📧</div>
+          <h3>Email</h3>
+          <p><a href="mailto:hello@apexsummit.org">hello@apexsummit.org</a></p>
+          <p style="font-size: 13px; color: var(--muted);">We'll respond within 24 hours</p>
+        </div>
+
+        <div class="contact-info-card">
+          <div class="contact-info-icon">📞</div>
+          <h3>Phone</h3>
+          <p><a href="tel:1-800-2739-5323">1-800-APEX-LEAD (1-800-2739-5323)</a></p>
+          <p style="font-size: 13px; color: var(--muted);">Monday–Friday, 8AM–6PM CT</p>
+        </div>
+
+        <div class="contact-info-card">
+          <div class="contact-info-icon">💬</div>
+          <h3>Live Chat</h3>
+          <p>Start a live chat with our support team. Available during business hours.</p>
+          <p><a href="#" onclick="if(window.LiveChatWidget) window.LiveChatWidget.call('maximize'); return false;">Open Live Chat</a></p>
+        </div>
+
+        <div class="contact-info-card">
+          <div class="contact-info-icon">🕐</div>
+          <h3>Response Times</h3>
+          <p><strong>General Inquiries:</strong> Within 24 hours</p>
+          <p><strong>Urgent Issues:</strong> Within 2 hours</p>
+          <p><strong>Weekend/Holiday:</strong> Next business day</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Office Locations -->
+    <div class="office-locations">
+      <h2>Our Locations</h2>
+      <div class="office-grid">
+        <div class="office-card">
+          <h4>🏢 Headquarters</h4>
+          <p>1 Leadership Way</p>
+          <p>South Barrington, IL 60601</p>
+          <p>United States</p>
+        </div>
+        <div class="office-card">
+          <h4>🌍 International Support</h4>
+          <p>Apex Leadership operates in 100+ countries with regional support teams available to assist with local inquiries and partnerships.</p>
+        </div>
+        <div class="office-card">
+          <h4>🤝 Partnerships</h4>
+          <p>For partnership and sponsorship opportunities, please contact our business development team at <a href="mailto:partnerships@apexsummit.org">partnerships@apexsummit.org</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Back to Top Button -->
+<button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="leadership-summit.html" class="nav-logo" style="display:inline-flex;">
+          <div class="logo-mark"><span>A</span></div>
+          Apex Leadership
+        </a>
+        <p id="footer-brand-p">A nonprofit organization dedicated to developing leaders who multiply their influence and transform their communities.</p>
+        <div class="footer-social" style="margin-top:1.5rem;">
+          <a href="#" class="social-link">X</a>
+          <a href="#" class="social-link">in</a>
+          <a href="#" class="social-link">f</a>
+          <a href="#" class="social-link">▶</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Summit</h5>
+        <ul>
+          <li><a href="leadership-summit.html#speakers">Speakers</a></li>
+          <li><a href="leadership-summit.html#attend">Attend</a></li>
+          <li><a href="leadership-summit.html#hosting">Host a Site</a></li>
+          <li><a href="leadership-summit.html#experience">Experience</a></li>
+          <li><a href="leadership-summit.html#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Support</h5>
+        <ul>
+          <li><a href="contact-us.html">Contact Us</a></li>
+          <li><a href="help-center.html">Help Center</a></li>
+          <li><a href="legal-policies.html">Privacy Policy</a></li>
+          <li><a href="legal-policies.html">Terms & Conditions</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p id="footer-bottom-p1">© 2026 Apex Leadership Network. All rights reserved. A 501(c)(3) tax-exempt nonprofit organization.</p>
+      <p style="color:var(--gold-dark);font-size:12px;" id="footer-bottom-p2">Gifts are secure and tax-deductible.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="Language Switcher.js"></script>
+
+<script>
+  function handleContactForm(event) {
+    event.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const subject = document.getElementById('subject').value;
+
+    alert(`Thank you ${name}! We've received your message and will respond to ${email} shortly.`);
+    event.target.reset();
+  }
+
+  const backToTop = document.getElementById('backToTop');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      backToTop.classList.add('show');
+    } else {
+      backToTop.classList.remove('show');
+    }
+  });
+
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  let lastScrollTop = 0;
+  window.addEventListener('scroll', function() {
+    const navbar = document.getElementById('navbar');
+    const scrollTop = window.scrollY;
+
+    if (scrollTop > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+    lastScrollTop = scrollTop;
+  });
+</script>
+
+<!-- Start of Text (www.text.com) code -->
+<script>
+    window.__lc = window.__lc || {};
+    window.__lc.organizationId = "585f8682-e0a4-49b5-8ddb-b33406e01702";
+    window.__lc.integration_name = "manual_onboarding";
+    window.__lc.product_name = "text";
+    ;(function(n,t,c){function i(n){return e._h?e._h.apply(null,n):e._q.push(n)}var e={_q:[],_h:null,_v:"2.0",on:function(){i(["on",c.call(arguments)])},once:function(){i(["once",c.call(arguments)])},off:function(){i(["off",c.call(arguments)])},get:function(){if(!e._h)throw new Error("[LiveChatWidget] You can't use getters before load.");return i(["get",c.call(arguments)])},call:function(){i(["call",c.call(arguments)])},init:function(){var n=t.createElement("script");n.async=!0,n.type="text/javascript",n.src="https://cdn.livechatinc.com/tracking.js",t.head.appendChild(n)}};!n.__lc.asyncInit&&e.init(),n.LiveChatWidget=n.LiveChatWidget||e}(window,document,[].slice))
+</script>
+<noscript><a href="https://www.text.com/chat-with/585f8682-e0a4-49b5-8ddb-b33406e01702/" rel="nofollow">Chat with us</a>, powered by <a href="https://www.text.com/" rel="noopener nofollow" target="_blank">Text</a></noscript>
+<!-- End of Text code -->
+
+</body>
+</html>

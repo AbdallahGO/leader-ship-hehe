@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Help Center - Apex Leadership</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    .help-header {
+      margin-top: 100px;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .help-header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .help-header h1 {
+      font-family: var(--serif);
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .help-header p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .search-box {
+      margin-top: 2rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg-1);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .search-box button {
+      padding: 0.75rem 1.5rem;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .search-box button:hover {
+      background: var(--gold-light);
+    }
+
+    .help-content {
+      padding: 4rem 2rem;
+    }
+
+    .help-container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .help-categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+
+    .help-category {
+      background: var(--bg-3);
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .help-category:hover {
+      border-color: var(--gold);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(212, 175, 55, 0.15);
+    }
+
+    .help-category-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .help-category h3 {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+      color: var(--gold);
+    }
+
+    .help-category p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .help-articles-section {
+      margin-bottom: 4rem;
+    }
+
+    .help-articles-section h2 {
+      font-family: var(--serif);
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: var(--text);
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .help-article-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .help-article-item {
+      padding: 1.5rem;
+      background: var(--bg-3);
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .help-article-item:hover {
+      background: var(--bg-2);
+      border-color: var(--gold);
+    }
+
+    .help-article-title {
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .help-article-desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .help-article-meta {
+      margin-top: 1rem;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 40px;
+      height: 40px;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s;
+      z-index: 50;
+    }
+
+    .back-to-top.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .back-to-top:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+    }
+
+    .faq-section {
+      background: var(--bg-3);
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+
+    .faq-section h2 {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+      color: var(--text);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 1rem;
+    }
+
+    .faq-item {
+      margin-bottom: 1.5rem;
+      border-left: 3px solid var(--gold);
+      padding-left: 1.5rem;
+    }
+
+    .faq-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .faq-question {
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+    }
+
+    .faq-answer {
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .help-header {
+        margin-top: 60px;
+        padding: 2rem 1rem;
+      }
+
+      .help-header h1 {
+        font-size: 2rem;
+      }
+
+      .help-content {
+        padding: 2rem 1rem;
+      }
+
+      .help-categories {
+        grid-template-columns: 1fr;
+      }
+
+      .search-box {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav id="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="leadership-summit.html" class="nav-logo">
+        <div class="logo-mark"><span>A</span></div>
+        Apex Leadership
+      </a>
+      <ul class="nav-links">
+        <li><a href="leadership-summit.html#speakers">Speakers</a></li>
+        <li><a href="leadership-summit.html#attend">Attend</a></li>
+        <li><a href="leadership-summit.html#experience">Experience</a></li>
+        <li><a href="leadership-summit.html#hosting">Hosting</a></li>
+        <li><a href="leadership-summit.html#faq">FAQ</a></li>
+      </ul>
+      <div class="nav-cta">
+        <button class="lang-btn" id="langBtn" onclick="toggleLang()" aria-label="Switch language">
+          <span class="lang-flag" id="langFlag">🇸🇦</span>
+          <span id="langLabel">العربية</span>
+        </button>
+        <a href="leadership-summit.html" class="btn btn-gold">Back to Summit</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HEADER ── -->
+<div class="help-header">
+  <div class="help-header-inner">
+    <h1>Help Center</h1>
+    <p>Find answers to your questions about the Summit, registration, tickets, and more. Browse our comprehensive knowledge base or search for specific topics.</p>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search for help articles..." />
+      <button onclick="searchHelp()">Search</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONTENT ── -->
+<div class="help-content">
+  <div class="help-container">
+    <!-- Quick Categories -->
+    <div class="help-categories">
+      <div class="help-category" onclick="scrollToSection('registration')">
+        <div class="help-category-icon">🎫</div>
+        <h3>Registration</h3>
+        <p>Questions about registering, ticket types, and account setup</p>
+      </div>
+      <div class="help-category" onclick="scrollToSection('tickets')">
+        <div class="help-category-icon">💳</div>
+        <h3>Tickets & Pricing</h3>
+        <p>Learn about different ticket options and pricing details</p>
+      </div>
+      <div class="help-category" onclick="scrollToSection('attending')">
+        <div class="help-category-icon">📍</div>
+        <h3>Attending the Summit</h3>
+        <p>What to expect, logistics, and what to bring</p>
+      </div>
+      <div class="help-category" onclick="scrollToSection('technical')">
+        <div class="help-category-icon">🔧</div>
+        <h3>Technical Support</h3>
+        <p>Issues with streaming, website, or account access</p>
+      </div>
+      <div class="help-category" onclick="scrollToSection('hosting')">
+        <div class="help-category-icon">🏢</div>
+        <h3>Hosting a Site</h3>
+        <p>Information about becoming a summit host</p>
+      </div>
+      <div class="help-category" onclick="scrollToSection('policies')">
+        <div class="help-category-icon">📋</div>
+        <h3>Policies & Terms</h3>
+        <p>Cancellations, refunds, and terms of service</p>
+      </div>
+    </div>
+
+    <!-- Registration Articles -->
+    <div class="help-articles-section" id="registration">
+      <h2>Registration & Account</h2>
+      <div class="help-article-list">
+        <div class="help-article-item">
+          <div class="help-article-title">How do I create an account?</div>
+          <div class="help-article-desc">Step-by-step guide to setting up your Apex Leader account and completing your profile.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">I forgot my password. How can I reset it?</div>
+          <div class="help-article-desc">Instructions for resetting your password and regaining access to your account.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">Can I change my email address?</div>
+          <div class="help-article-desc">Learn how to update your email address associated with your account.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">How do I invite guests to my registration?</div>
+          <div class="help-article-desc">Information about adding team members and guests to your account.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tickets & Pricing -->
+    <div class="help-articles-section" id="tickets">
+      <h2>Tickets & Pricing</h2>
+      <div class="help-article-list">
+        <div class="help-article-item">
+          <div class="help-article-title">What are the different ticket types?</div>
+          <div class="help-article-desc">Overview of Local Summit, Studio Audience, and Online ticket options and what's included.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">What is the Executive Track?</div>
+          <div class="help-article-desc">Details about the exclusive executive experience and premium benefits.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">How do I get the team discount?</div>
+          <div class="help-article-desc">Save 20-30% by bringing a team of 5 or more. Learn how to qualify for team pricing.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">What payment methods do you accept?</div>
+          <div class="help-article-desc">Information about credit cards, digital wallets, and payment options.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attending the Summit -->
+    <div class="help-articles-section" id="attending">
+      <h2>Attending the Summit</h2>
+      <div class="help-article-list">
+        <div class="help-article-item">
+          <div class="help-article-title">What are the event dates and times?</div>
+          <div class="help-article-desc">Schedule information for the 2026 Apex Leadership Summit (August 12–13).</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">Where is the event held?</div>
+          <div class="help-article-desc">Venue details and directions to Willow Creek Community Church and local host sites worldwide.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">What should I bring to the Summit?</div>
+          <div class="help-article-desc">Recommended items, dress code suggestions, and packing tips for attendees.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">Will there be food and beverages?</div>
+          <div class="help-article-desc">Information about meals, snacks, and refreshments available during the event.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technical Support -->
+    <div class="help-articles-section" id="technical">
+      <h2>Technical Support</h2>
+      <div class="help-article-list">
+        <div class="help-article-item">
+          <div class="help-article-title">How do I access the online stream?</div>
+          <div class="help-article-desc">Requirements and steps to watch the Summit online from any device.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">I'm experiencing streaming issues. What can I do?</div>
+          <div class="help-article-desc">Troubleshooting guide for buffering, connection, and playback problems.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">Is there a mobile app for the Summit?</div>
+          <div class="help-article-desc">Learn about mobile access options and downloading the companion app.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">My login credentials aren't working. Help!</div>
+          <div class="help-article-desc">Solutions for account access issues and locked account recovery.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hosting -->
+    <div class="help-articles-section" id="hosting">
+      <h2>Hosting a Site</h2>
+      <div class="help-article-list">
+        <div class="help-article-item">
+          <div class="help-article-title">How do I become a Summit host?</div>
+          <div class="help-article-desc">Application process and requirements for hosting the Summit in your community.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">What support does Apex provide to hosts?</div>
+          <div class="help-article-desc">Training, marketing materials, technical support, and resources provided to all hosts.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">Is there a cost to host?</div>
+          <div class="help-article-desc">No cost to host! Learn about the host revenue model and attendee fees.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Policies & Terms -->
+    <div class="help-articles-section" id="policies">
+      <h2>Policies & Terms</h2>
+      <div class="help-article-list">
+        <div class="help-article-item">
+          <div class="help-article-title">What is your cancellation policy?</div>
+          <div class="help-article-desc">Full refund details for cancellations made 30+ days before the event.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">Can I transfer my ticket to someone else?</div>
+          <div class="help-article-desc">Ticket transfer process and deadlines for changing attendee information.</div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+        <div class="help-article-item">
+          <div class="help-article-title">What is your privacy policy?</div>
+          <div class="help-article-desc">Information about how we collect, use, and protect your personal data. <a href="legal-policies.html">Read full policy</a></div>
+          <div class="help-article-meta">Updated: May 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-item">
+        <div class="faq-question">Can I register just one day instead of both days?</div>
+        <div class="faq-answer">The full Summit experience spans both days (August 12–13). However, some local host sites may offer flexible options. Check with your local host site for details.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Are there student or military discounts?</div>
+        <div class="faq-answer">Yes! Valid student and military IDs qualify for 15% off Local Summit tickets. Apply the discount code at checkout.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Will sessions be recorded?</div>
+        <div class="faq-answer">Yes, all sessions are recorded. Online attendees receive on-demand access for 30 days after the event.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">How can I get a refund?</div>
+        <div class="faq-answer">Refunds are available for cancellations made 30+ days before the event. Process your refund through your account dashboard or contact support.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">Is childcare available at the venue?</div>
+        <div class="faq-answer">Childcare availability varies by location. Contact your local host site for information about children's services and pricing.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">How do I contact support if I can't find my answer?</div>
+        <div class="faq-answer">Visit our <a href="contact-us.html">Contact Us</a> page to reach our support team via email, phone, or live chat. We respond within 24 hours.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Back to Top Button -->
+<button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="leadership-summit.html" class="nav-logo" style="display:inline-flex;">
+          <div class="logo-mark"><span>A</span></div>
+          Apex Leadership
+        </a>
+        <p id="footer-brand-p">A nonprofit organization dedicated to developing leaders who multiply their influence and transform their communities.</p>
+        <div class="footer-social" style="margin-top:1.5rem;">
+          <a href="#" class="social-link">X</a>
+          <a href="#" class="social-link">in</a>
+          <a href="#" class="social-link">f</a>
+          <a href="#" class="social-link">▶</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Summit</h5>
+        <ul>
+          <li><a href="leadership-summit.html#speakers">Speakers</a></li>
+          <li><a href="leadership-summit.html#attend">Attend</a></li>
+          <li><a href="leadership-summit.html#hosting">Host a Site</a></li>
+          <li><a href="leadership-summit.html#experience">Experience</a></li>
+          <li><a href="leadership-summit.html#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Support</h5>
+        <ul>
+          <li><a href="contact-us.html">Contact Us</a></li>
+          <li><a href="help-center.html">Help Center</a></li>
+          <li><a href="legal-policies.html">Privacy Policy</a></li>
+          <li><a href="legal-policies.html">Terms & Conditions</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p id="footer-bottom-p1">© 2026 Apex Leadership Network. All rights reserved. A 501(c)(3) tax-exempt nonprofit organization.</p>
+      <p style="color:var(--gold-dark);font-size:12px;" id="footer-bottom-p2">Gifts are secure and tax-deductible.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="Language Switcher.js"></script>
+
+<script>
+  function scrollToSection(sectionId) {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function searchHelp() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    if (query.trim() === '') {
+      alert('Please enter a search term');
+      return;
+    }
+    alert(`Searching for: "${query}"\n\nIn a full implementation, this would filter articles by relevance.`);
+  }
+
+  const backToTop = document.getElementById('backToTop');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      backToTop.classList.add('show');
+    } else {
+      backToTop.classList.remove('show');
+    }
+  });
+
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  let lastScrollTop = 0;
+  window.addEventListener('scroll', function() {
+    const navbar = document.getElementById('navbar');
+    const scrollTop = window.scrollY;
+
+    if (scrollTop > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+    lastScrollTop = scrollTop;
+  });
+
+  // Allow Enter key to search
+  document.getElementById('searchInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      searchHelp();
+    }
+  });
+</script>
+
+<!-- Start of Text (www.text.com) code -->
+<script>
+    window.__lc = window.__lc || {};
+    window.__lc.organizationId = "585f8682-e0a4-49b5-8ddb-b33406e01702";
+    window.__lc.integration_name = "manual_onboarding";
+    window.__lc.product_name = "text";
+    ;(function(n,t,c){function i(n){return e._h?e._h.apply(null,n):e._q.push(n)}var e={_q:[],_h:null,_v:"2.0",on:function(){i(["on",c.call(arguments)])},once:function(){i(["once",c.call(arguments)])},off:function(){i(["off",c.call(arguments)])},get:function(){if(!e._h)throw new Error("[LiveChatWidget] You can't use getters before load.");return i(["get",c.call(arguments)])},call:function(){i(["call",c.call(arguments)])},init:function(){var n=t.createElement("script");n.async=!0,n.type="text/javascript",n.src="https://cdn.livechatinc.com/tracking.js",t.head.appendChild(n)}};!n.__lc.asyncInit&&e.init(),n.LiveChatWidget=n.LiveChatWidget||e}(window,document,[].slice))
+</script>
+<noscript><a href="https://www.text.com/chat-with/585f8682-e0a4-49b5-8ddb-b33406e01702/" rel="nofollow">Chat with us</a>, powered by <a href="https://www.text.com/" rel="noopener nofollow" target="_blank">Text</a></noscript>
+<!-- End of Text code -->
+
+</body>
+</html>
