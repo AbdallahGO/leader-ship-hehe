@@ -18,7 +18,7 @@ abstract class TestCase extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-        
+
         // Run migrations for each test
         $this->artisan('migrate:refresh', ['--database' => 'sqlite']);
     }
@@ -82,8 +82,11 @@ abstract class TestCase extends BaseTestCase
      */
     protected function assertJsonStatus($response, $status)
     {
-        $this->assertEquals($status, $response->getStatusCode(), 
-            "Expected status {$status}, got {$response->getStatusCode()}. Response: {$response->getContent()}");
+        $this->assertEquals(
+            $status,
+            $response->getStatusCode(),
+            "Expected status {$status}, got {$response->getStatusCode()}. Response: {$response->getContent()}"
+        );
     }
 
     /**

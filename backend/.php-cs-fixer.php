@@ -25,7 +25,7 @@ $config
         '@PHP71Migration' => true,
         '@PHP74Migration' => true,
         '@PHP80Migration' => true,
-        
+
         // Additional rules
         'align_multiline_comment' => ['comment_type' => 'phpdocs_required'],
         'array_indentation' => true,

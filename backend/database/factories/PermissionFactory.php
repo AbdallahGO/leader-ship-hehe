@@ -28,7 +28,7 @@ class PermissionFactory extends Factory
 
         $action = $this->faker->randomElement($actions);
         $resource = $this->faker->randomElement($resources);
-        
+
         return [
             'name' => "{$action}-{$resource}",
             'description' => ucfirst($action) . " " . $resource,
