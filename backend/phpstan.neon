@@ -1,0 +1,62 @@
+includes:
+  - phpstan-baseline.neon
+
+parameters:
+  level: 9
+  
+  paths:
+    - app
+    - config
+    - routes
+    - tests
+    
+  excludePaths:
+    - bootstrap/cache
+    - storage
+    - vendor
+    
+  tmpDir: storage/phpstan
+  
+  reportUnmatchedIgnoredErrors: true
+  
+  ignoreErrors:
+    # Ignore Laravel magic methods
+    - identifier: missingType.iterableValue
+    - identifier: argument.type
+      paths:
+        - app/Http/Controllers/**
+    
+  dynamicConstantNames:
+    - APP_ENV
+    - APP_DEBUG
+    - DB_CONNECTION
+    - DB_HOST
+    - DB_PORT
+    - DB_DATABASE
+    - DB_USERNAME
+    - DB_PASSWORD
+    
+  strictRules:
+    # Enable strict Laravel checks
+    uselessCast: true
+    strictCalls: true
+    strictArrayFilter: true
+    strictTypes: true
+
+  disableRegexModifier: true
+  
+  # Custom rule settings
+  disallowedConstants:
+    - var_dump
+    - dump
+    - dd
+    - die
+    
+  implicitThrows: true
+  
+  # Type checking
+  typeAliases:
+    JWTToken: 'string'
+    UUID: 'string'
+    Email: 'string'
+    URL: 'string'

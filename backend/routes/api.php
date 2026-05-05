@@ -64,13 +64,27 @@ Route::middleware([
         });
     });
 
-    // Admin routes
-    Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+    // Admin routes (requires admin role)
+    Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
         Route::prefix('admin')->group(function () {
-            Route::get('/users', [AdminController::class, 'getUsers']);
+            // User Management Endpoints
+            Route::get('/users', [AdminController::class, 'listUsers']);
+            Route::get('/users/search', [AdminController::class, 'searchUsers']);
             Route::get('/users/{id}', [AdminController::class, 'getUser']);
             Route::put('/users/{id}', [AdminController::class, 'updateUser']);
             Route::delete('/users/{id}', [AdminController::class, 'deleteUser']);
+            Route::post('/users/{id}/roles', [AdminController::class, 'assignRole']);
+            Route::post('/users/{id}/ban', [AdminController::class, 'banUser']);
+            Route::post('/users/{id}/unban', [AdminController::class, 'unbanUser']);
+            Route::post('/users/{id}/suspend', [AdminController::class, 'suspendUser']);
+            Route::post('/users/{id}/unsuspend', [AdminController::class, 'unsuspendUser']);
+            Route::get('/users/{id}/activities', [AdminController::class, 'getUserActivities']);
+
+            // Role Management Endpoints
+            Route::get('/roles', [AdminController::class, 'listRoles']);
+
+            // Statistics
+            Route::get('/statistics', [AdminController::class, 'getStatistics']);
         });
     });
 });
