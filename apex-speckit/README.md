@@ -104,7 +104,7 @@ apex-speckit/
 | Payments | Stripe |
 | Email | SendGrid |
 | QR Codes | `qrcode` npm |
-| Frontend | Next.js 14 App Router + React 18 |
+| Frontend | HTML/CSS/JS (static site) |
 | Deploy — Backend | Railway (Node.js + managed PostgreSQL) |
-| Deploy — Frontend | Vercel |
+| Deploy — Frontend | GitHub Pages |
 | AI Tooling | GitHub Spec Kit v0.8+ |

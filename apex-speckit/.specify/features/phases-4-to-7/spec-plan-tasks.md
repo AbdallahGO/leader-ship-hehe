@@ -249,9 +249,9 @@ Return 200.
 
 ### Task 5.5 — Connect frontend promo input to API
 
-**File**: `frontend/components/PaymentModal`
+**File**: `index.js` (payment modal script)
 
-Replace `applyPromo()` fake function with `fetch('/api/promo/validate', { method: 'POST', credentials: 'include', body: JSON.stringify({ code, plan_key }) })`.
+Replace `applyPromo()` fake function with `fetch('http://localhost:5000/api/promo/validate', { method: 'POST', credentials: 'include', body: JSON.stringify({ code, plan_key }) })`.
 On success: apply returned discount to order summary.
 On error: show server error message.
 
@@ -378,14 +378,17 @@ Promo codes: same pattern + GET /admin/promo-codes/:id/stats (uses, revenue gene
 `PUT /admin/host-applications/:id`: validate status in ['approved','rejected'].
 On approved: send approval email with next steps.
 
-### Task 6.6 — Build admin dashboard frontend page
+### Task 6.6 — Build admin dashboard HTML page
 
-**File**: `frontend/pages/admin/index.jsx`
+**File**: `admin.html` + `admin.js`
 
-Protect with auth check — redirect non-admin to home.
+Create separate admin page with auth check on load — redirect non-admin to home.
 Stat cards: fetch from `GET /api/admin/dashboard`.
 Orders table: fetch from `GET /api/admin/orders`, client-side filter controls.
 Sidebar with links to other admin sections.
+Include admin.css for styling.
+
+**Verify**: Admin user can access /admin.html, regular user gets redirected.
 
 ---
 
@@ -398,51 +401,45 @@ Sidebar with links to other admin sections.
 
 ---
 
-# Phase 7 — Spec + Plan + Tasks: Next.js Migration & Production Deploy
+# Phase 7 — Spec + Plan + Tasks: Static Site Production Deploy
 **Spec Kit artifact**
 
 ---
 
 ## Spec
 
-### F1 — Next.js Frontend
-Convert current HTML/JS site to Next.js App Router.
-Each page section becomes a React component.
-SSR for public pages (home, speakers, sponsors) — good for SEO.
-CSR for authenticated pages (dashboard, checkout).
+### F1 — Static Site Optimization
+Optimize HTML/JS for production deployment.
+Minify CSS and JS. Optimize images.
+Add service worker for caching static assets.
+Ensure all API calls use production URLs.
 
-### F2 — API Integration Layer
-All API calls through `lib/api.js` typed wrappers.
-Auth state in React Context (from Phase 2).
-`next/image` for all speaker and sponsor images.
-Environment variables: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`.
-
-### F3 — User Dashboard Page
-`/dashboard` — protected page.
+### F2 — User Dashboard Integration
+Add `/dashboard` section to main HTML or separate page.
 Shows: user profile, my orders list with ticket codes, QR code download.
+Protected by auth check.
 
-### F4 — Production Backend Hardening
+### F3 — Production Backend Hardening
 Enforce HTTPS in production (trust proxy for Railway).
 Remove all `console.log` — use only `console.error` for exceptions.
 Add `X-Request-ID` header to all responses for tracing.
 Validate env on startup (Phase 1 pattern).
 Ensure database migrations run before server starts.
 
-### F5 — Deploy
+### F4 — Deploy
 Backend to Railway: Node.js service + PostgreSQL add-on.
-Frontend to Vercel: connect GitHub repo, set env vars.
-Custom domain: `apexsummit.org` → Vercel. `api.apexsummit.org` → Railway.
+Frontend to GitHub Pages: static files from repository root.
+Custom domain: `apexsummit.org` → GitHub Pages. `api.apexsummit.org` → Railway.
 SendGrid domain authentication for email deliverability.
 Stripe production keys + webhook endpoint registered.
 
 ### Acceptance Criteria
-- [ ] `next build` completes with no errors
-- [ ] All 7 sections render correctly
+- [ ] All sections render correctly on GitHub Pages
 - [ ] Auth modal connects to production API
 - [ ] Payment flow works with Stripe production keys
 - [ ] Emails deliver to real inboxes
 - [ ] SSL on both domains
-- [ ] Lighthouse score ≥ 90 on all categories
+- [ ] Page loads fast (< 3s)
 
 ---
 
@@ -451,31 +448,13 @@ Stripe production keys + webhook endpoint registered.
 ### Next.js Project Structure
 
 ```
-frontend/
-├── app/
-│   ├── layout.jsx         ← root layout, AuthContext, fonts
-│   ├── page.jsx           ← home (all sections)
-│   ├── dashboard/
-│   │   └── page.jsx       ← protected user dashboard
-│   └── admin/
-│       └── page.jsx       ← protected admin dashboard
-├── components/
-│   ├── Navbar.jsx
-│   ├── Hero.jsx
-│   ├── Speakers.jsx
-│   ├── Pricing.jsx
-│   ├── Experience.jsx
-│   ├── Hosting.jsx
-│   ├── FAQ.jsx
-│   ├── Sponsors.jsx
-│   ├── Footer.jsx
-│   ├── AuthModal.jsx
-│   └── PaymentModal.jsx
-├── lib/
-│   ├── api.js             ← all fetch wrappers
-│   ├── auth.js            ← AuthContext + useAuth hook
-│   └── stripe.js          ← Stripe.js singleton
-└── public/
+leadership-summit.html
+├── index.js               ← auth modal, payment modal scripts
+├── admin.html             ← admin dashboard page
+├── admin.js               ← admin dashboard script
+├── style.css              ← all styles
+├── admin.css              ← admin styles
+└── assets/
     ├── speakers/          ← speaker images
     └── sponsors/          ← sponsor logos
 ```
@@ -501,30 +480,26 @@ node server.js
 
 ## Tasks
 
-### Task 7.1 — Initialize Next.js project
+### Task 7.1 — Add user dashboard to main site
 
-`npx create-next-app@latest frontend --typescript --tailwind --app`.
-Configure `next.config.js`: `images.domains` for speaker/sponsor images.
-Set up `_document` for Stripe.js script tag.
-
-### Task 7.2 — Create React components for all sections
-
-Convert each HTML section to a React component with TypeScript props.
-Preserve all existing CSS as CSS Modules or Tailwind.
-Maintain all animation classes and scroll-reveal behavior.
-
-### Task 7.3 — Implement AuthContext and useAuth hook
-
-Wrap app in `<AuthProvider>`. On mount: call `GET /api/auth/me`.
-`useAuth()` hook returns `{ user, login, logout, isLoading }`.
-
-### Task 7.4 — Build user dashboard page
-
-`/dashboard`: show user name, order history from `GET /api/orders/me`.
+Add dashboard section to `leadership-summit.html` or create `dashboard.html`.
+Show user name, order history from `GET /api/orders/me`.
 For each order: show plan, date, total, status badge.
 For each ticket: show ticket code, QR code image (from API).
+Protect with auth check.
 
-### Task 7.5 — Harden backend for production
+### Task 7.2 — Optimize static assets
+
+Minify `style.css` and `index.js` for production.
+Optimize speaker/sponsor images (WebP format, lazy loading).
+Add service worker for caching static assets.
+
+### Task 7.3 — Update API URLs for production
+
+Replace `http://localhost:5000` with production API URL in all fetch calls.
+Add environment variable handling for dev vs prod.
+
+### Task 7.4 — Harden backend for production
 
 Add `app.set('trust proxy', 1)` for Railway.
 Add `X-Request-ID` middleware.
@@ -532,7 +507,7 @@ Ensure all async handlers have try/catch.
 Remove all debug console.logs.
 Test with `NODE_ENV=production`.
 
-### Task 7.6 — Deploy backend to Railway
+### Task 7.5 — Deploy backend to Railway
 
 Create Railway project. Add Node.js service from GitHub repo.
 Add PostgreSQL add-on — copy `DATABASE_URL`.
@@ -540,14 +515,14 @@ Set all env variables in Railway dashboard.
 Set build + start commands.
 Verify: `https://api.apexsummit.org/health` returns 200.
 
-### Task 7.7 — Deploy frontend to Vercel
+### Task 7.6 — Deploy frontend to GitHub Pages
 
-Import GitHub repo to Vercel.
-Set env: `NEXT_PUBLIC_API_URL=https://api.apexsummit.org`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`.
-Connect custom domain `apexsummit.org`.
+Enable GitHub Pages in repository settings.
+Set source to main branch, root directory.
+Add custom domain `apexsummit.org`.
 Verify: all sections load, auth modal works, payment flow completes.
 
-### Task 7.8 — Register Stripe production webhook
+### Task 7.7 — Register Stripe production webhook
 
 In Stripe dashboard → Webhooks → Add endpoint.
 URL: `https://api.apexsummit.org/api/webhooks/stripe`.

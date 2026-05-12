@@ -18,7 +18,23 @@ const PORT = Number(process.env.PORT || 5000);
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+      
+      const allowedOrigins = [
+        process.env.FRONTEND_URL,
+        'http://localhost:3000', // Next.js dev
+        'http://localhost:8000', // Static server
+        'http://127.0.0.1:8000'  // Alternative localhost
+      ];
+      
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   })
 );

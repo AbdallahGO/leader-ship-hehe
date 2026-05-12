@@ -9,7 +9,7 @@
 ## Project Identity
 
 **Product**: Apex Leadership Summit 2026 — Full-stack web application  
-**Stack**: Node.js + Express (backend) · PostgreSQL (database) · Next.js + React (frontend) · Stripe (payments) · SendGrid (email)  
+**Stack**: Node.js + Express (backend) · PostgreSQL (database) · HTML/CSS/JS (frontend) · Stripe (payments) · SendGrid (email)  
 **AI Tooling**: GitHub Spec Kit with Claude Code / GitHub Copilot / Gemini CLI
 
 ---
@@ -59,12 +59,12 @@
 
 ## 5. Frontend Rules
 
-- **No business logic in components**: Components render UI and call API functions. Logic lives in `lib/api.js` and `lib/auth.js`.
-- **No direct `fetch()` in components**: All API calls go through the typed wrappers in `lib/api.js`.
-- **Auth state**: Managed via React Context (`AuthContext`). Never stored in component-level state or localStorage.
+- **No business logic in scripts**: HTML elements render UI and call API functions. Logic lives in `index.js` and separate API modules.
+- **API calls**: All API calls use `fetch()` with proper error handling. Store base URL in a constant.
+- **Auth state**: Managed via localStorage for user data. Check on page load and update UI accordingly.
 - **Forms**: All form submissions show a loading state. All errors display inline next to the relevant field.
 - **Accessibility**: Every interactive element has an `aria-label` or visible label. Modals trap focus. Color is never the only indicator of state.
-- **Images**: Speaker and sponsor images served via `next/image` with `alt` text. Lazy-loaded below the fold.
+- **Images**: Speaker and sponsor images use regular `<img>` tags with `alt` text. Lazy-loaded with `loading="lazy"`.
 
 ---
 
@@ -90,9 +90,9 @@
 ## 8. Deployment Rules
 
 - **Backend**: Railway (Node.js service + managed PostgreSQL add-on).
-- **Frontend**: Vercel (Next.js, automatic preview deployments on PRs).
-- **Secrets**: Stored in Railway and Vercel environment variables dashboards. Never in code or `.env` files committed to git.
-- **`.gitignore`**: `.env`, `node_modules/`, `.next/`, `*.log` are always ignored.
+- **Frontend**: GitHub Pages (static HTML/CSS/JS, served from repository root).
+- **Secrets**: Stored in Railway environment variables dashboard. Never in code or `.env` files committed to git.
+- **`.gitignore`**: `.env`, `node_modules/`, `*.log` are always ignored.
 - **Migrations run before server starts**: The Railway start command runs `node database/migrate.js && node server.js`.
 
 ---
