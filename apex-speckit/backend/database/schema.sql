@@ -4,18 +4,19 @@ CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    phone VARCHAR(50),
-    organization VARCHAR(255),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255),
+    phone VARCHAR(30),
+    organization VARCHAR(200),
     country VARCHAR(100),
     city VARCHAR(100),
-    role VARCHAR(50) DEFAULT 'attendee',
-    is_active BOOLEAN DEFAULT TRUE,
-    reset_token VARCHAR(255),
-    reset_token_expires TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    role VARCHAR(20) DEFAULT 'attendee',
+    -- Email verification (add these 3 lines)
+    is_verified BOOLEAN DEFAULT FALSE,
+    verify_token VARCHAR(255),
+    verify_token_expires TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 CREATE UNIQUE INDEX IF NOT EXISTS users_email_unique ON users(email);
 CREATE TABLE IF NOT EXISTS plans (

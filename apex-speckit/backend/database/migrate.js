@@ -8,6 +8,7 @@ validateEnv();
 
 const force = process.argv.includes('--force');
 const schemaFile = path.join(__dirname, 'schema.sql');
+const migrationsDir = path.join(__dirname, 'migrations');
 const sql = fs.readFileSync(schemaFile, 'utf-8');
 
 async function runMigration() {
@@ -31,6 +32,20 @@ async function runMigration() {
     }
 
     await client.query(sql);
+
+    if (fs.existsSync(migrationsDir)) {
+      const migrationFiles = fs.readdirSync(migrationsDir)
+        .filter((file) => file.endsWith('.sql'))
+        .sort();
+
+      for (const migrationFile of migrationFiles) {
+        const migrationSql = fs.readFileSync(path.join(migrationsDir, migrationFile), 'utf-8');
+        if (migrationSql.trim().length === 0) continue;
+        console.log(`Running migration: ${migrationFile}`);
+        await client.query(migrationSql);
+      }
+    }
+
     console.log('✓ Migration complete');
     process.exit(0);
   } catch (error) {
