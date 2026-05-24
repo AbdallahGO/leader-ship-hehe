@@ -106,7 +106,7 @@
     const s = speakers[idx];
     const img = document.getElementById('sp-img');
     img.style.opacity = '0';
-    setTimeout(() => { img.src = '/Speakers/' + s.img; img.alt = s.name; img.style.opacity = '1'; }, 120);
+    setTimeout(() => { img.src = 'Speakers/' + s.img; img.alt = s.name; img.style.opacity = '1'; }, 120);
     img.style.transition = 'opacity 0.3s ease';
 
     document.getElementById('sp-name').textContent = s.name;
