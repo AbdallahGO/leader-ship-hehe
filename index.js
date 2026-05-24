@@ -1,4 +1,7 @@
-   // ── AUTH MODAL ──
+   // ── CONFIG ──
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:5000' : 'https://api.apexsummit.org';
+
+// ── AUTH MODAL ──
   const overlay = document.getElementById('authOverlay');
 
   function openAuth(tab = 'signin') {
@@ -90,14 +93,30 @@
     const btn = document.getElementById('si-submit');
     btn.classList.add('loading'); btn.disabled = true;
 
-    // Simulate API call
-    setTimeout(() => {
+    // Real API call
+    fetch(`${API_BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password: pw })
+    })
+    .then(res => res.json())
+    .then(data => {
       btn.classList.remove('loading'); btn.disabled = false;
-      document.getElementById('si-success').classList.add('show');
-      // hide form fields
-      document.querySelectorAll('#panel-signin .auth-field, #panel-signin .auth-forgot, #panel-signin .auth-submit, #panel-signin .auth-divider, #panel-signin .auth-socials, #panel-signin .auth-switch').forEach(el => el.style.display = 'none');
-      showToast('✓ Signed in successfully!');
-    }, 1600);
+      if (data.success) {
+        // Store user in localStorage
+        localStorage.setItem('user', JSON.stringify(data.data.user));
+        updateNavbar();
+        closeAuth();
+        showToast('✓ Signed in successfully!');
+      } else {
+        showErr('si-pw-err', true);
+      }
+    })
+    .catch(err => {
+      btn.classList.remove('loading'); btn.disabled = false;
+      showToast('⚠ Network error. Please try again.');
+    });
   }
 
   // ── REGISTER ──
@@ -121,13 +140,40 @@
     const btn = document.getElementById('rg-submit');
     btn.classList.add('loading'); btn.disabled = true;
 
-    // Simulate API call
-    setTimeout(() => {
+    // Real API call
+    fetch(`${API_BASE}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        first_name: first,
+        last_name: last,
+        email,
+        password: pw,
+        country: 'USA' // Default for now
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
       btn.classList.remove('loading'); btn.disabled = false;
-      document.getElementById('rg-success').classList.add('show');
-      document.querySelectorAll('#panel-register .auth-field, #panel-register .auth-row, #panel-register .auth-check, #panel-register .auth-submit, #panel-register .auth-divider, #panel-register .auth-socials, #panel-register .auth-switch').forEach(el => el.style.display = 'none');
-      showToast('✓ Account created! Check your email.');
-    }, 1800);
+      if (data.success) {
+        // Store user in localStorage
+        localStorage.setItem('user', JSON.stringify(data.data.user));
+        updateNavbar();
+        closeAuth();
+        showToast('✓ Account created! Check your email.');
+      } else {
+        if (data.error.includes('email')) {
+          showErr('rg-email-err', true);
+        } else {
+          showToast('⚠ ' + data.error);
+        }
+      }
+    })
+    .catch(err => {
+      btn.classList.remove('loading'); btn.disabled = false;
+      showToast('⚠ Network error. Please try again.');
+    });
   }
 
   // ── SOCIAL AUTH ──
@@ -143,3 +189,71 @@
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3500);
   }
+
+  // ── UPDATE NAVBAR ──
+  function updateNavbar() {
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const signInBtn = document.querySelector('.nav-cta a[href="#"]');
+    if (user) {
+      signInBtn.textContent = `Hi, ${user.first_name}`;
+      signInBtn.onclick = () => showUserMenu();
+    } else {
+      signInBtn.textContent = 'Sign In';
+      signInBtn.onclick = () => openAuth('signin');
+    }
+  }
+
+  // ── SHOW USER MENU ──
+  function showUserMenu() {
+    // For now, just show logout option
+    if (confirm('Logout?')) {
+      logout();
+    }
+  }
+
+  // ── LOGOUT ──
+  function logout() {
+    fetch(`${API_BASE}/api/auth/logout`, {
+      method: 'POST',
+      credentials: 'include'
+    })
+    .then(() => {
+      localStorage.removeItem('user');
+      updateNavbar();
+      showToast('✓ Logged out successfully!');
+    })
+    .catch(() => {
+      // Even if API fails, clear local state
+      localStorage.removeItem('user');
+      updateNavbar();
+    });
+  }
+
+  // ── CHECK AUTH ON LOAD ──
+  function checkAuthOnLoad() {
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (user) {
+      // Verify with server
+      fetch(`${API_BASE}/api/auth/me`, {
+        credentials: 'include'
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          localStorage.setItem('user', JSON.stringify(data.data));
+        } else {
+          localStorage.removeItem('user');
+        }
+        updateNavbar();
+      })
+      .catch(() => {
+        localStorage.removeItem('user');
+        updateNavbar();
+      });
+    } else {
+      updateNavbar();
+    }
+  }
+
+  // Initialize on load
+  document.addEventListener('DOMContentLoaded', checkAuthOnLoad);

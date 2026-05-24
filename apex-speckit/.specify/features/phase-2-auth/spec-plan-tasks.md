@@ -46,10 +46,11 @@ Verifies with `JWT_SECRET`. Attaches `req.user = { id, email, role }`.
 On failure → 401. Used by all protected routes.
 
 ### F8 — Frontend Integration
-Sign In tab in auth modal → `POST /api/auth/login` → store user in React Context → update navbar.
+Sign In tab in auth modal → `POST /api/auth/login` → store user in localStorage/session → update navbar.
 Register tab → `POST /api/auth/register` → same flow.
 Navbar shows user first name + avatar initials after login.
 Sign In button replaced by user menu with Dashboard + Logout.
+Auth modal in leadership-summit.html connects to real API endpoints.
 
 ---
 
@@ -257,27 +258,68 @@ Apply to `/register`, `/login`, `/forgot-password` routes.
 
 ## Task 2.10 — Connect Sign In modal to API
 
-**File**: `frontend/lib/api.js` + `frontend/components/AuthModal`
+**File**: `index.js` (main auth modal script)
 
-Add `loginUser(email, password)` and `registerUser(data)` functions to `api.js`.
-Both use `fetch('/api/auth/login', { method: 'POST', credentials: 'include', body: JSON.stringify(...) })`.
-Replace the `setTimeout` simulation in `handleSignIn()` and `handleRegister()` with real API calls.
-On success: call `setUser(data.user)` from AuthContext.
+Replace the `setTimeout` simulation in `handleSignIn()` with real fetch call:
+```js
+fetch('http://localhost:5000/api/auth/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  credentials: 'include',
+  body: JSON.stringify({ email, password })
+})
+.then(res => res.json())
+.then(data => {
+  if (data.success) {
+    // Store user in localStorage for navbar display
+    localStorage.setItem('user', JSON.stringify(data.data.user));
+    updateNavbar();
+    closeAuth();
+    showToast('✓ Signed in successfully!');
+  } else {
+    showErr('si-pw-err', true);
+  }
+})
+```
 
 **Verify**: Signing in with a real DB user sets cookie and shows user name in navbar.
 
 ---
 
-## Task 2.11 — Build AuthContext and update navbar
+## Task 2.11 — Connect Register modal to API
 
-**File**: `frontend/lib/AuthContext.jsx`
+**File**: `index.js`
 
-React Context providing `{ user, setUser, logout }`.
-On app load: call `GET /api/auth/me` to restore session if cookie exists.
-`logout()` calls `POST /api/auth/logout` then sets `user = null`.
-In navbar: if `user` → show `Hi, {user.first_name}` + Logout button. Else → show Sign In button.
+Replace the `setTimeout` simulation in `handleRegister()` with real fetch call to `/api/auth/register`.
+On success: store user in localStorage, update navbar, close modal, show success screen.
+On duplicate email: show error under email field.
+
+**Verify**: Registering creates user in DB, sets cookie, sends welcome email.
+
+---
+
+## Task 2.12 — Update navbar for authenticated users
+
+**File**: `index.js` + `leadership-summit.html`
+
+Add `updateNavbar()` function that checks `localStorage.getItem('user')`.
+If user exists: hide "Sign In" button, show "Hi, {first_name}" + Logout button.
+Logout button calls `POST /api/auth/logout`, clears localStorage, updates navbar.
+
+Add `checkAuthOnLoad()` on page load to restore navbar state.
 
 **Verify**: Refreshing page after login keeps user signed in (cookie persists).
+
+---
+
+## Task 2.13 — Handle CORS for local development
+
+**File**: `backend/server.js` or `.env`
+
+Update CORS to allow `http://localhost:3000` (for Next.js) AND `http://localhost:8000` (for static HTML server).
+Or run HTML with `python -m http.server 8000` and update FRONTEND_URL.
+
+**Verify**: API calls from HTML page work without CORS errors.
 
 ---
 
@@ -287,7 +329,7 @@ In navbar: if `user` → show `Hi, {user.first_name}` + Logout button. Else → 
 - [ ] JWT cookie is httpOnly (not readable by JS in browser DevTools)
 - [ ] bcrypt hash is not returned in any API response
 - [ ] Rate limiter rejects 11th request in 15 minutes
-- [ ] Frontend Sign In / Register modals call real API
+- [ ] HTML Sign In / Register modals call real API
 - [ ] Navbar updates after login
 - [ ] Session persists on page refresh
 

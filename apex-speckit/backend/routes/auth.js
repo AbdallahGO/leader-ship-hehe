@@ -77,8 +77,8 @@ router.post('/register', authLimiter, validateRegistration, async (req, res) => 
     // Insert user
     const result = await pool.query(
       `INSERT INTO users (first_name, last_name, email, password, phone, organization, country, city, role)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-       RETURNING id, first_name, last_name, email, phone, organization, country, city, role, created_at`,
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING id, first_name, last_name, email, phone, organization, country, city, role, created_at`,
       [first_name, last_name, email, hashedPassword, phone, organization, country, city, 'attendee']
     );
 
@@ -149,11 +149,11 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     res.cookie('token', token, getCookieOptions());
 
     // Return user without password
-    const { password: _, ...userWithoutPassword } = user;
+    const { password: _, reset_token, reset_token_expires, ...userWithoutSensitive } = user;
 
     res.status(200).json({
       success: true,
-      data: { user: userWithoutPassword }
+      data: { user: userWithoutSensitive }
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -166,7 +166,11 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
 
 // POST /api/auth/logout
 router.post('/logout', (req, res) => {
-  res.clearCookie('token');
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict'
+  });
   res.status(200).json({
     success: true
   });
@@ -300,3 +304,37 @@ router.post('/reset-password', validateResetPassword, async (req, res) => {
 });
 
 module.exports = router;
+
+// GET /api/auth/verify-email?token=PLAIN_TOKEN
+router.get('/verify-email', async (req, res) => {
+  try {
+    const { token } = req.query;
+    if (!token) return res.status(400).json({ success: false, error: 'Token missing' });
+
+    // Hash the incoming token and look it up
+    const hashed = crypto.createHash('sha256').update(token).digest('hex');
+
+    const result = await pool.query(
+      `SELECT * FROM users
+       WHERE verify_token = $1 AND verify_token_expires > NOW()`,
+      [hashed]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ success: false, error: 'Invalid or expired verification link' });
+    }
+
+    // Mark as verified and clear token
+    await pool.query(
+      `UPDATE users SET is_verified = true, verify_token = NULL, verify_token_expires = NULL WHERE id = $1`,
+      [result.rows[0].id]
+    );
+
+    // Redirect to frontend with success message
+    res.redirect('http://localhost:3000?verified=true');
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
+});

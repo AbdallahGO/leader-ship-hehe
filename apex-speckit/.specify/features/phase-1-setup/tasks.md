@@ -159,14 +159,14 @@ Logs `✓ Seed complete — plans, speakers, sponsors, promo codes loaded`.
 
 ## Phase 1 Complete Checklist
 
-- [ ] `npm run dev` starts server, logs port + env confirmation
-- [ ] `GET /health` returns `{ success: true, data: { status: "ok" } }`
-- [ ] `npm run migrate` runs without errors, all 9 tables visible in PostgreSQL
-- [ ] `npm run seed` runs without errors, rows visible in DB
-- [ ] Removing an env variable causes startup error with variable name in message
-- [ ] Bad DB password causes startup failure with clear message
-- [ ] Posting invalid JSON to any route returns 400, not a crash
-- [ ] `constitution.md` rules: UUIDs ✓, no raw SQL concat ✓, no secrets in code ✓
+- [X] `npm run dev` starts server, logs port + env confirmation
+- [X] `GET /health` returns `{ success: true, data: { status: "ok" } }`
+- [X] `npm run migrate` runs without errors, all 9 tables visible in PostgreSQL
+- [X] `npm run seed` runs without errors, rows visible in DB
+- [X] Removing an env variable causes startup error with variable name in message
+- [X] Bad DB password causes startup failure with clear message
+- [X] Posting invalid JSON to any route returns 400, not a crash
+- [X] `constitution.md` rules: UUIDs ✓, no raw SQL concat ✓, no secrets in code ✓
 
 ---
 

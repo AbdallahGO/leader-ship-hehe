@@ -247,10 +247,11 @@ Return `{ success: true, data: { orders: [...] } }`.
 
 ## Task 3.7 — Replace payment modal simulation with Stripe.js
 
-**File**: `frontend/components/PaymentModal`
+**File**: `leadership-summit.html` + `index.js`
 
-Load Stripe.js: `<script src="https://js.stripe.com/v3/">` in `_document.jsx`.
-On modal open: `const stripe = Stripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)`.
+Add Stripe.js script: `<script src="https://js.stripe.com/v3/"></script>` in HTML head.
+Create payment modal HTML with Step 1 (personal info), Step 2 (card), Step 3 (success).
+In `index.js`: on modal open initialize `const stripe = Stripe(STRIPE_PUBLISHABLE_KEY)`.
 Create Elements: `stripe.elements()` → mount `card` element to `#card-element` div.
 On Step 1 Next: call `POST /api/orders/create` → store `client_secret`.
 On Pay button: `stripe.confirmCardPayment(client_secret, { payment_method: { card: cardElement, billing_details: { name, email } } })`.
