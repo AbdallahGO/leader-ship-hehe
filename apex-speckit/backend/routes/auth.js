@@ -77,8 +77,8 @@ router.post('/register', authLimiter, validateRegistration, async (req, res) => 
     // Insert user
     const result = await pool.query(
       `INSERT INTO users (first_name, last_name, email, password, phone, organization, country, city, role)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-       RETURNING id, first_name, last_name, email, phone, organization, country, city, role, created_at`,
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING id, first_name, last_name, email, phone, organization, country, city, role, created_at`,
       [first_name, last_name, email, hashedPassword, phone, organization, country, city, 'attendee']
     );
 
@@ -103,26 +103,6 @@ router.post('/register', authLimiter, validateRegistration, async (req, res) => 
     });
   }
 });
-
-const crypto = require('crypto');
-const { sendWelcomeEmail, sendVerificationEmail } = require('../services/email');
-
-// Inside your POST /register handler, after inserting the user:
-
-// 1. Generate verification token
-const verifyToken        = crypto.randomBytes(32).toString('hex');
-const verifyTokenHashed  = crypto.createHash('sha256').update(verifyToken).digest('hex');
-const verifyTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-
-// 2. Save token to DB
-await pool.query(
-  `UPDATE users SET verify_token = $1, verify_token_expires = $2 WHERE id = $3`,
-  [verifyTokenHashed, verifyTokenExpires, newUser.id]
-);
-
-// 3. Send both emails (fire and forget — no await)
-sendWelcomeEmail(newUser);
-sendVerificationEmail(newUser, verifyToken);
 
 // POST /api/auth/login
 router.post('/login', authLimiter, validateLogin, async (req, res) => {
